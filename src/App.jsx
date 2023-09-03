@@ -85,51 +85,55 @@ function App() {
     },
   ];
   const [search, setSearch] = useState(null);
+  const [searchedData, setSearchedData] = useState(null);
   const [sort, setSort] = useState(false);
   const [dataSort, setDataSort] = useState("none");
-  const [result, setResult] = useState([]);
+  const [result, setResult] = useState(users);
 
-  useEffect(() => {
-    if(dataSort === 'none') {
-      search !== null
-      ? setResult(users.filter((d) => d.email.includes(search)))
-      : setResult(users);
+  const searching = (data) => {
+    let tempResult;
+    if (data === "") {
+      tempResult = users;
+      sorting(dataSort, tempResult);
     } else {
-      search !== null
-      ? setResult(users.filter((d) => d.email.includes(search)))
-      : setResult(users);
+      tempResult = users.filter((d) => d.email.includes(data));
+      sorting(dataSort, tempResult);
     }
-    
-  }, [search]);
+  };
 
-  const selectingSort = (data) => {
+  const selectSort = (data) => {
     setSort(false);
     setDataSort(data);
+    sorting(data);
+  };
+
+  const sorting = (data, prevValue) => {
+    let tempValue = prevValue || result;
     if (data === "id asc") {
-      setResult(sortById(result, "asc"));
+      setResult(sortById(tempValue, "asc"));
     }
     if (data === "id desc") {
-      setResult(sortById(result, "desc"));
+      setResult(sortById(tempValue, "desc"));
     }
-    if (data === "email asc" ) {
-      setResult(sortByEmail(result, "asc"));
+    if (data === "email asc") {
+      setResult(sortByEmail(tempValue, "asc"));
     }
-    if (data === "email desc" ) {
-      setResult(sortByEmail(result, "desc"));
+    if (data === "email desc") {
+      setResult(sortByEmail(tempValue, "desc"));
     }
-    setResult(result);
+    setResult(tempValue);
   };
 
   const sortById = (data, drct) => {
-    drct === 'asc' && data.sort((a, b) => a.id - b.id)
-    drct === 'desc' && data.sort((a, b) => b.id - a.id)
+    drct === "asc" && data.sort((a, b) => a.id - b.id);
+    drct === "desc" && data.sort((a, b) => b.id - a.id);
   };
 
   const sortByEmail = (data, drct) => {
     data.sort((a, b) => {
       const emailA = a.email.toLowerCase();
       const emailB = b.email.toLowerCase();
-      if (drct === 'asc') {
+      if (drct === "asc") {
         if (emailA < emailB) {
           return -1;
         }
@@ -139,7 +143,7 @@ function App() {
         return 0;
       }
 
-      if(drct === 'desc') {
+      if (drct === "desc") {
         if (emailA > emailB) {
           return -1;
         }
@@ -148,11 +152,9 @@ function App() {
         }
         return 0;
       }
-      
     });
   };
-
-  console.log(result);
+  
   return (
     <>
       <main className="m-10">
@@ -162,7 +164,7 @@ function App() {
             type="text"
             placeholder="Search"
             className="px-4 py-2 border-solid border-2 border-gray-400 rounded-md"
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => searching(e.target.value)}
           />
           <section className="w-48 relative">
             <button
@@ -191,35 +193,35 @@ function App() {
               <button
                 type="button"
                 className="hover:bg-gray-200 w-full py-1"
-                onClick={() => selectingSort("none")}
+                onClick={() => selectSort("none")}
               >
                 none
               </button>
               <button
                 type="button"
                 className="hover:bg-gray-200 w-full py-1"
-                onClick={() => selectingSort("id asc")}
+                onClick={() => selectSort("id asc")}
               >
                 id asc
               </button>
               <button
                 type="button"
                 className="hover:bg-gray-200 w-full py-1"
-                onClick={() => selectingSort("id desc")}
+                onClick={() => selectSort("id desc")}
               >
                 id desc
               </button>
               <button
                 type="button"
                 className="hover:bg-gray-200 w-full  py-1"
-                onClick={() => selectingSort("email asc")}
+                onClick={() => selectSort("email asc")}
               >
                 email asc
               </button>
               <button
                 type="button"
                 className="hover:bg-gray-200 w-full  py-1"
-                onClick={() => selectingSort("email desc")}
+                onClick={() => selectSort("email desc")}
               >
                 email desc
               </button>
