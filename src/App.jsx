@@ -220,6 +220,7 @@ function App() {
                     ? "transition ease-in-out rotate-180"
                     : "transition ease-in-out rotate-0"
                 }`}
+                alt="arrow"
               />
             </button>
             <div
@@ -283,6 +284,7 @@ function App() {
                     ? "transition ease-in-out rotate-180"
                     : "transition ease-in-out rotate-0"
                 }`}
+                alt="arrow"
               />
             </button>
 
