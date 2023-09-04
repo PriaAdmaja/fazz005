@@ -84,11 +84,27 @@ function App() {
       programmingLanguages: ["Javascript", "Java", "Go"],
     },
   ];
-  const [search, setSearch] = useState(null);
-  const [searchedData, setSearchedData] = useState(null);
+
+  useEffect(() => {
+    const style = {
+      name : `${themes[0].name}`,
+      header: {
+        backgroundColor: `${themes[0].headerColor}`,
+        color: `${themes[0].headerTextColor}`,
+      },
+      detail: {
+        backgroundColor: `${themes[0].detailColor}`,
+        color: `${themes[0].detailTextColor}`,
+      },
+    };
+    setSelectedThemes(style);
+  }, []);
+
   const [sort, setSort] = useState(false);
+  const [themesSort, setThemesSort] = useState(false);
   const [dataSort, setDataSort] = useState("none");
   const [result, setResult] = useState(users);
+  const [selectedThemes, setSelectedThemes] = useState();
 
   const searching = (data) => {
     let tempResult;
@@ -107,8 +123,27 @@ function App() {
     sorting(data);
   };
 
+  const selectTheme = (data) => {
+    setThemesSort(false);
+    const style = {
+      header: {
+        backgroundColor: `${data.headerColor}`,
+        color: `${data.headerTextColor}`,
+      },
+      detail: {
+        backgroundColor: `${data.detailColor}`,
+        color: `${data.detailTextColor}`,
+      },
+      name: `${data.name}`
+    };
+    setSelectedThemes(style);
+  };
+
   const sorting = (data, prevValue) => {
     let tempValue = prevValue || result;
+    if (data === "none") {
+      setResult(sortById(tempValue, "asc"));
+    }
     if (data === "id asc") {
       setResult(sortById(tempValue, "asc"));
     }
@@ -154,7 +189,9 @@ function App() {
       }
     });
   };
-  
+
+  if(!selectedThemes) return <h1 className="flex justify-center items-center font-bold text-3xl mt-44">Wait</h1>
+
   return (
     <>
       <main className="m-10">
@@ -227,29 +264,86 @@ function App() {
               </button>
             </div>
           </section>
+          <section className="w-48 relative">
+            <button
+              type="button"
+              className="w-full py-2 pl-5 pr-3 border-solid border-2 hover:border-black border-gray-400 rounded-md flex justify-between items-center gap-2"
+              onClick={() =>
+                themesSort === true ? setThemesSort(false) : setThemesSort(true)
+              }
+            >
+              <div className="flex gap-1">
+                <p>Themes :</p>
+                <p>{selectedThemes?.name}</p>
+              </div>
+              <img
+                src={downArrow}
+                className={`w-6 ${
+                  themesSort === true
+                    ? "transition ease-in-out rotate-180"
+                    : "transition ease-in-out rotate-0"
+                }`}
+              />
+            </button>
+
+            <div
+              className={`absolute flex-col bg-white w-full border-solid border-2 border-gray-400 rounded-md mt-1 ${
+                themesSort === true ? "flex" : "hidden"
+              }`}
+            >
+              {themes.map((d, i) => {
+                return (
+                  <button
+                    type="button"
+                    className="hover:bg-gray-200 w-full py-1"
+                    onClick={() => selectTheme(d)}
+                    key={i}
+                  >
+                    {d.name}
+                  </button>
+                );
+              })}
+            </div>
+          </section>
         </section>
         <section className="w-4/5 mx-auto">
-          <div className="grid grid-cols-4 w-full bg-blue-200 px-3 py-2 font-bold border-b-2 border-solid border-b-black">
-            <p className="">Id</p>
-            <p className="">Email</p>
-            <p className="">Mariage</p>
-            <p className="">Programming Language</p>
+          <div
+            className={`grid grid-cols-6 w-full  px-3 py-2 font-bold `}
+            style={selectedThemes?.header}
+          >
+            <p className={`col-span-1 `}>Id</p>
+            <p className="col-span-2">Email</p>
+            <p className="col-span-1">Mariage</p>
+            <p className="col-span-2">Programming Language</p>
           </div>
-          {result.map((d, i) => {
-            return (
-              <div
-                className="grid grid-cols-4 w-full px-3 py-2 text-left  bg-red-200"
-                key={i}
-              >
-                <p className=" ">{d.id}</p>
-                <p className=" ">{d.email}</p>
-                <p className=" ">
-                  {String(d.isMarried) === true ? "Yes" : "No"}
-                </p>
-                <p className=" ">{d.programmingLanguages.join(", ").split()}</p>
-              </div>
-            );
-          })}
+          {result.length > 0 ? (
+            result.map((d, i) => {
+              return (
+                <div
+                  className={`grid grid-cols-6 w-full px-3 py-2 text-left bg-red-200`}
+                  style={selectedThemes?.detail}
+                  key={i}
+                >
+                  <p className="col-span-1">{d.id}</p>
+                  <p className="col-span-2">{d.email}</p>
+                  <p className="col-span-1">
+                    {String(d.isMarried) === true ? "Yes" : "No"}
+                  </p>
+                  <p className="col-span-2">
+                    {d.programmingLanguages.join(", ").split()}
+                  </p>
+                </div>
+              );
+            })
+          ) : (
+            <div
+              className={`grid grid-cols-6 w-full px-3 py-2 text-left bg-red-200`}
+              style={selectedThemes?.detail}
+              
+            >
+              <p className="col-span-6 text-center">No Result</p>
+            </div>
+          )}
         </section>
       </main>
     </>
